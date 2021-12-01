@@ -22,6 +22,7 @@ The HMM-MAR code was modified slightly. These are the changes.
 - In initGamma_random.m, changed line 17 to rng(1), (for reproducibility)
 - In hmmmar_init.m, lines 109-113, deleted last parameter options.priorOFFvsON (to prevent an error)
 - In padGamma.m, line 27, deleted ‘offset=sum(d)’ and ‘Tshifted=T-offset’. Add ‘Tshifted=T’. (to prevent error with padGamma)
+My fork of HMM-MAR at https://github.com/jaysonjeg/HMM-MAR/tree/branch1, already has these changes
 
 Citation:
 For usage of the scripts, please cite the following:
