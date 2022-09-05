@@ -26,5 +26,5 @@ The HMM-MAR code was modified slightly. These are the changes.
 My fork of HMM-MAR at https://github.com/jaysonjeg/HMM-MAR/tree/branch1, already has these changes
 
 Citation:
-For usage of the scripts, please cite the following:
-XXXXXX
+If you use the scripts, please cite the following:
+https://elifesciences.org/articles/79581
