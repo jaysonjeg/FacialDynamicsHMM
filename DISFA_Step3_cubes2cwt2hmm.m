@@ -1,6 +1,7 @@
 %{
-Starting from cube a_aus, get continuous wavelet transform, then run HMM
-This code requires variable a_aus in workspace, which is an array: nframes x nAUs
+Starting from array a_aus, get continuous wavelet transform using
+get_cwt.m, then run HMM using HMM-MAR toolbox
+This code requires variable a_aus in workspace, which is an array: ntimepoints x nAUs
 (17) * nSubjects
 %}
 
@@ -22,9 +23,9 @@ nframes=size(cube,1);
 nAUs=size(cube,2);
 nsubs=size(cube,3);
 
-t=(0:size(cube,1)-1)/Fs; %calculate time points
+t=(0:size(cube,1)-1)/Fs; %list of timestamps
 %%
-%Supplementary Figure 1. Plot mean time series
+%Optional: Supplementary Figure 1. Plot mean time series
 cubem=squeeze(mean(cube,3));
 figure;
 for i=1:length(these_AUs)
@@ -39,36 +40,35 @@ end
 clear cubem nplotsheight nAU i;
 
 %%
-%Get CWT of individual participants
-maxframe=800; %800 (for just stand-up comedy, to make Figure 1)
-[cfssraw,frq,coi] = get_cwt(cube(1:maxframe,:,:),Fs,true); %Get CWT of individual pts. Put in 'maxframe' or 'end'
+%For each subject, perform continuous wavelet transform. 
+maxframe=800; %sett to 800 to just include the comedy stimulus, so that we can make FIgure 1
+[cfssraw,frq,coi] = get_cwt(cube(1:maxframe,:,:),Fs,true); %cfssraw is array:(81 frequency bins x 800 time points x 27 subjects x 14 action units)
 [period,coi]=get_periods(frq,coi);
-cfss=get_cwt_mag(cfssraw,cube(1:maxframe,:,:)); %Get just amplitude of CWT: nfreqs x ntimepoints x nsubs x nAUs
-cfssm=squeeze(mean(cfss,3)); %Mean across subjects of CWT amplitude: nfreqs x ntimepoints x nAUs
+cfss=get_cwt_mag(cfssraw,cube(1:maxframe,:,:)); %Get just magnitude of CWT: nfreqs x ntimepoints x nsubs x nAUs
+cfssm=squeeze(mean(cfss,3)); %Mean across subjects of CWT amplitude: 81 freq bins x 800 time points x 14 AUs
 clear cfssraw
-playtone();
-
 
 %%
-%Test exact consistency
+%Optional: Diagnostic test to make sure pipeline reproducible
 cubem=squeeze(mean(cube,3));
 format long
 cubem(1,1)
 cfss(10,10,10,10)
 format short
 %{
- 0.376296296296296
+Should be
+0.376296296296296
 0.008107829102573
 %}
 
 %%
-%Get CWT of group mean. Need this for Figure 1
+%Optional but need this for Figure 1. Get continuous wavelet transform of group mean
 cubem=squeeze(mean(cube(1:maxframe,:,:),3)); %Group mean time series
 [mcfssraw,~,~]=get_cwt(cubem,Fs,true); %CWT of group mean time series
 mcfss=get_cwt_mag(mcfssraw,cubem); %Amplitude of CWT of group mean time series: nfreqs x ntimepints x 1 x nAUs
 %%
-%Mean of CWT minus CWT of mean - t-test for significant
-%difference. Need this for Figure 1
+%Optional but need this for Figure 1. Mean of CWT minus CWT of mean - t-test for significant
+%difference
 
 nAU=find(strcmp(aulist(these_AUs),'12'));
 diff=cfssm-mcfss;  %nfreqs x ntimepoints x nAUs
@@ -120,10 +120,10 @@ pmean3=p(2,1,2,3);
 %Panel A: Show pictures of participant SN003 face from 8 and 23 seconds
 ppics.pack('h',2);
 ppics(1).select();
-temp=imread('C:\Users\Jayson\Google Drive\PhD\Project_Melancholia\2021 MelancholiaHMM\Nature Human Behaviour\Figures\SN003_0008_copy.png');
+temp=imread('C:\Users\Jayson\Google Drive\PhD\Project_Melancholia\MelancholiaHMM Paper submission\Nature Human Behaviour\Figures\SN003_0008_copy.png');
 imshow(temp); ylim([0,maxframe]);
 ppics(2).select();
-temp=imread('C:\Users\Jayson\Google Drive\PhD\Project_Melancholia\2021 MelancholiaHMM\Nature Human Behaviour\Figures\SN003_0023_copy.png');
+temp=imread('C:\Users\Jayson\Google Drive\PhD\Project_Melancholia\MelancholiaHMM Paper submission\Nature Human Behaviour\Figures\SN003_0023_copy.png');
 imshow(temp); ylim([0,maxframe]);
 
 %Panel B: Plot raw AU time series, and group mean time series
@@ -163,12 +163,12 @@ colorbar('Position',[.93,.51,.015,.15]);
 %Panel D: Plot mean of CWT
 pmean1.select(); 
 clims=[];
-plot_cwt(cmap_sig,squeeze(mcfss(:,:,:,nAU)),period,Fs,this_coi);
+plot_cwt(cmap_sig,squeeze(cfssm(:,:,nAU)),period,Fs,this_coi);
 clims(end+1)=max(get(gca,'cLim'));
 
 %Panel E: Plot CWT of mean
 pmean2.select(); 
-plot_cwt(cmap_sig,squeeze(cfssm(:,:,nAU)),period,Fs,this_coi);
+plot_cwt(cmap_sig,squeeze(mcfss(:,:,:,nAU)),period,Fs,this_coi);
 clims(end+1)=max(get(gca,'cLim'));
 clims=max(clims);
 pmean1.select(); set(gca,'cLim',[0,clims]); %Make clim common
@@ -233,13 +233,11 @@ for i=1:length(temp)
 end
 clear pmean1 pmean2 pmean3 plines ppics
 
-
 %%
-%Get CWT of individual participants (for entire video)
-maxframe=nframes; %800 (for just stand-up comedy, to make Figure 1) or nframes==4820 (for entire time series, to make Figure 2)
-[cfssraw,frq,coi] = get_cwt(cube(1:maxframe,:,:),Fs,true); %Get CWT of individual pts. Put in 'maxframe' or 'end'
+%Get CWT of individual participants (for entire video). Not just comedy
+[cfssraw,frq,coi] = get_cwt(cube,Fs,true); %Get CWT of individual pts
 [period,coi]=get_periods(frq,coi);
-cfss=get_cwt_mag(cfssraw,cube(1:maxframe,:,:)); %Get just amplitude of CWT: nfreqs x ntimepoints x nsubs x nAUs
+cfss=get_cwt_mag(cfssraw,cube); %Get just magnitude of CWT: nfreqs x ntimepoints x nsubs x nAUs
 cfssm=squeeze(mean(cfss,3)); %Mean across subjects of CWT amplitude: nfreqs x ntimepoints x nAUs
 clear cfssraw
 playtone();
@@ -273,7 +271,7 @@ cfss8=reshape(cfss7,[],size(cfss7,3)); clear cfss7; %ntimepoints(nframes(fine)*n
 playtone();
 %%
 %{
-Prepare for HMM
+Prepare for HMM (using HMM-MAR toolbox)
 %}
 X=cfss8;
 T=repmat({[nframes]},nsubs,1); % length of data for each session
@@ -290,9 +288,11 @@ for i=1:length(configurations)
 end
 [hmm,Gamma,Gammaup,Xi,vpath,fehist,maxFO,newframerate] = runHMM_JJ1(configurations,X,T);
 felast=cellfun(@(x) x(end),fehist);
+
 figure; scatter(number_states,felast); xlabel('Number of states'); ylabel('Free energy');
 set(gca,'XScale','log');
 
+xticks([2,4,8,16,32,64]); ylim([1.7e6,2.2e6]);
 %% Run HMM and perform statistical testing on the HMM results vs the conditions
 [windowsize_sec,smwin,configurations]=get_defaults_HMM(8); %Get default configuration parameters
 for i=1:length(configurations)
@@ -340,11 +340,12 @@ playtone();
 %[FO,ntrials] = getFractionalOccupancy (Gammaup{ID},T,configurations{ID}); %To get fractional occupancy of each state
 
 %%
-%Make 100 surrogate Viterbi paths with each subject randomly circshifted.
+%Make 1000 surrogate Viterbi paths with each subject randomly circshifted.
 %Need this for Figure 2, Panel D, grey shading
 vpathxnull={};
-n=100;
+n=1000;
 for i=1:n
+    i
     shifts=randi(size(vpathx,1),size(vpathx,2),1);
     temp=vpathx;
     for i=1:size(vpathx,2)
@@ -421,7 +422,7 @@ pStateMeans.pack({.65,.35});
 pStateMeans(1).pack('h',8);
 for i=1:8
     pStateMeans(1,i).select();
-    temp=imread(['D:\FORSTORAGE\NonImagingData\Melancholia\makehuman_render\RenderedFacesForFigure2\n5_state',int2str(i),'.png']);
+    temp=imread(['D:\FORSTORAGE\Data\Melancholia\MyCodeAndResults\makehuman_render\RenderedFacesForFigure2\n5_state',int2str(i),'.png']);
     %MODIFY THIS to where your makehuman renders
     temp=temp(70:end,210:end-150,:);
     imshow(temp);
@@ -495,7 +496,7 @@ adj=getTransProbs(h1);
 pplot=plot_HMM_transitionmatrix(adj,layout,prc,colormap_Viterbi);
 axis off;
 
-%%
+%Some small edits
 p.fontname='TimesNewRoman';
 pV.marginbottom=10;
 pCommon.marginbottom=5;
