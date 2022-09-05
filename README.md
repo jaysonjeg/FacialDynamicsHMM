@@ -6,7 +6,7 @@ To reproduce the results, run the following in order:
 2) DISFA_Step2_csv2cubes.m. Puts facial AU time series into nice Matlab arrays
 3) DISFA_Step3_cubes2cwt2hmm.m. Runs the pipeline, starting from Matlab arrays containing AU time series. Generates Figures 1 and 2.
 
-If you don't want to reproduce the results on DISFA but rather want to apply it on your own data, first run OpenFace on your data to produce action unit time series. Then make sure your data is in a matlab array called 'cube' which is ntimepoints x nAUs x nSubjects. Using our function get_cwt.m, type in Matlab: abs(get_cwt(cube,YourWebcamFrameRate,true)) to get wavelet transform representation of your data. Then proceed from line 265 in DISFA_Step3_cubes2cwt2hmm onwards.
+If you don't want to reproduce the results on DISFA but rather want to apply it on your own data, first run OpenFace on your data to produce action unit time series. Then make sure your data is in a matlab array called 'cube' which is ntimepoints x nAUs x nSubjects. Using our function get_cwt.m, type in Matlab: abs(get_cwt(cube,YourWebcamFrameRate,true)) to get wavelet transform representation of your data. Then do lines 265-271 in DISFA_Step3_cubes2cwt2hmm to get it into HMM-ready format. Then, you can either continue with the rest of the script, or follow the HMM-MAR usage notes yourself to implement the HMM.
 
 System:
 I used a Windows 10 operating system, 64-bit, 6 cores, with 64GB RAM. I used Matlab R2021a.
