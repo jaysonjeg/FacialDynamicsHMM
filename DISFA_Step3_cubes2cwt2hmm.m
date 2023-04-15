@@ -16,7 +16,7 @@ aunames=containers.Map({1,2,3,4,5,6,7,...
     'LipTightener','LipParts','JawDrop','Blink'});
 these_AUs= [1,3,5:16];  %1:16; %don't include 17th AU which is AU45 blink, and AU02/05 which have constant 0 value in some subs in melancholia dataset
 event_times=[40,70,96,125,199]; %Stimulus start times (sec) of each video in DISFA dataset
-Fs = 20; %sampling freq of DISFA dataset
+Fs = 10; %sampling freq of DISFA dataset
 
 cube=a_aus(:,these_AUs,:); clear a_aus;
 nframes=size(cube,1);
@@ -264,8 +264,9 @@ imagesc(allvars==0)
 %%
 %Prepare time-freq data for entry into HMM
 clear cfssm cube
+cfss=single(cfss);
 usefreqbins=false; %true to use freqbins rather than whole cwt
-cutoff_upper=5; %Upper cutoff frequency: default 5hz
+cutoff_upper=4; %Upper cutoff frequency: default 5hz
 cutoff_lower=0; %Lower cutoff frequency: default 0hz
 [cfss7,frqvalues,n_ylabels,~] = process_cfss(cfss,frq,usefreqbins,cutoff_upper,cutoff_lower);
 cfss8=reshape(cfss7,[],size(cfss7,3)); %ntimepoints(nframes(fine)*nsubs(coarse)) * datapoints
