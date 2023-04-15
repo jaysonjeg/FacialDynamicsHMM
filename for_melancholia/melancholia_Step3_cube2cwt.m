@@ -218,7 +218,7 @@ imagesc(allvars==0)
 %Prepare time-freq data for entry into HMM. 
 
 usefreqbins=false; %default false. Need True for cwt2ML.m
-cutoff_upper=4; %default 5hz. Set to a bit less than half of the Fs. So if Fs=10, then set this to 4.
+cutoff_upper=5; %default 5hz. Set to a bit less than half of the Fs. So if Fs=10, then set this to 4.
 cutoff_lower=0; %default 0hz
 [cfss7,frqvalues,n_ylabels,cfss6] = process_cfss(cfss,frq,usefreqbins,cutoff_upper,cutoff_lower);
 clear usefreqbins cutoff_upper cutoff_lower;
