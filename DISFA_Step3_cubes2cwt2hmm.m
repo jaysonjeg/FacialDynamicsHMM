@@ -263,17 +263,19 @@ allvars=squeeze(var(cube,1))';
 imagesc(allvars==0)
 %%
 %Prepare time-freq data for entry into HMM
+clear cfssm cube
 usefreqbins=false; %true to use freqbins rather than whole cwt
 cutoff_upper=5; %Upper cutoff frequency: default 5hz
 cutoff_lower=0; %Lower cutoff frequency: default 0hz
 [cfss7,frqvalues,n_ylabels,~] = process_cfss(cfss,frq,usefreqbins,cutoff_upper,cutoff_lower);
-cfss8=reshape(cfss7,[],size(cfss7,3)); clear cfss7; %ntimepoints(nframes(fine)*nsubs(coarse)) * datapoints
+cfss8=reshape(cfss7,[],size(cfss7,3)); %ntimepoints(nframes(fine)*nsubs(coarse)) * datapoints
+clear cfss7 cfss; 
 playtone();
 %%
 %{
 Prepare for HMM (using HMM-MAR toolbox)
 %}
-X=cfss8;
+X=cfss8; clear cfss8;
 T=repmat({[nframes]},nsubs,1); % length of data for each session
 T=cell2mat(T);
 Tsubject=T;
@@ -377,6 +379,11 @@ Contributions are rescaled to 0 to 1.
 %}
 n=5; %at the least, show the n largest AU contributions (rescaled to 0 to 1)
 visualiseAUs=zeros(8,nAUs);
+
+h1=hmm{ID};
+means=getMeans(h1);
+means2=reshape(means,[],n_ylabels,length(these_AUs));
+
 for i=1:8
     temp=squeeze(means2(i,:,:));
     temp=sum(temp);
