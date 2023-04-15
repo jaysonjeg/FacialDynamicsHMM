@@ -8,6 +8,8 @@ To reproduce the results, run the following in order:
 
 If you don't want to reproduce the results on DISFA but rather want to apply it on your own data, first run OpenFace on your data to produce action unit time series. Then make sure your data is in a matlab array called 'cube' which is ntimepoints x nAUs x nSubjects. Using our function get_cwt.m, type in Matlab: abs(get_cwt(cube,YourWebcamFrameRate,true)) to get wavelet transform representation of your data. Then do lines 265-271 in DISFA_Step3_cubes2cwt2hmm to get it into HMM-ready format. Then, you can either continue with the rest of the script, or follow the HMM-MAR usage notes yourself to implement the HMM.
 
+Subfolder 'for_melancholia' has scripts to run it on our melancholia data. This subfolder is for internal users who have access to the data
+
 System:
 I used a Windows 10 operating system, 64-bit, 6 cores, with 64GB RAM. I used Matlab R2021a.
 
